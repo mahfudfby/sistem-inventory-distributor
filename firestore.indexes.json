@@ -1,0 +1,37 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "barangKeluar",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "trxId",     "order": "ASCENDING"  },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "barangKeluar",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "tanggal", "order": "ASCENDING" },
+        { "fieldPath": "tanggal", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "barangMasuk",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sku",       "order": "ASCENDING"  },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "otpCodes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "email",  "order": "ASCENDING" },
+        { "fieldPath": "expiry", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

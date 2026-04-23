@@ -1,0 +1,19 @@
+# Node
+node_modules/
+functions/node_modules/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+firestore-debug.log
+
+# Environment (JANGAN commit secret ke git!)
+.env
+.env.local
+.runtimeconfig.json
+serviceAccountKey.json
+
+# OS
+.DS_Store
+Thumbs.db

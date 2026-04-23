@@ -1,0 +1,94 @@
+// ═══════════════════════════════════════════════════════════════════════
+// FIRESTORE SECURITY RULES — UD DUTA PANGAN
+// Versi: Firebase-only (tanpa GAS)
+//
+// STRATEGI KEAMANAN:
+//   • Semua data sensitif (users, logs, inventory, transaksi) hanya
+//     bisa diakses melalui Cloud Functions (server-side, pakai Admin SDK)
+//     → Admin SDK SELALU melewati rules ini (bypass)
+//
+//   • Client-side direct Firestore SDK:
+//     → Hanya koleksi "otpCodes" yang perlu dibaca langsung dari browser
+//       (untuk flow lupa password di index_firebase.html)
+//     → Semua koleksi lain: DENY dari browser
+//
+//   • Dengan arsitektur ini, browser TIDAK bisa membaca/menulis data
+//     tanpa melewati API backend kita terlebih dahulu
+//
+// CATATAN:
+//   Jika Anda memilih mode "Direct Firestore" (browser langsung akses Firestore
+//   tanpa Cloud Functions), ganti rules ini dengan rules di bawah yang
+//   ditandai OPTION B.
+// ═══════════════════════════════════════════════════════════════════════
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── OPTION A: CLOUD FUNCTIONS AS BACKEND (RECOMMENDED) ─────────────
+    // Semua akses dari browser ditolak.
+    // Cloud Functions pakai Admin SDK yang otomatis bypass rules ini.
+    // ─────────────────────────────────────────────────────────────────────
+
+    // OTP Codes: browser perlu baca untuk verifikasi client-side
+    // (jika verifikasi dipindah ke Cloud Functions, ini bisa DENY juga)
+    match /otpCodes/{docId} {
+      allow read:  if true;   // Browser bisa baca untuk cek status OTP
+      allow write: if false;  // Hanya backend (Admin SDK) yang bisa tulis
+    }
+
+    // Semua koleksi lain: DENY dari client (hanya Admin SDK)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+
+    // ─── OPTION B: DIRECT FIRESTORE (Aktifkan jika pakai mode client-side) ──
+    // Uncomment section ini dan hapus/comment OPTION A di atas
+    // PERINGATAN: Pastikan sudah pakai Firebase Authentication (bukan auth custom)
+    // ─────────────────────────────────────────────────────────────────────────
+    //
+    // function isAuthenticated() {
+    //   return request.auth != null;
+    // }
+    //
+    // function isAdmin() {
+    //   return isAuthenticated() &&
+    //     get(/databases/$(database)/documents/users/$(request.auth.token.username)).data.role == 'Administrator';
+    // }
+    //
+    // match /inventory/{docId} {
+    //   allow read: if isAuthenticated();
+    //   allow write: if isAuthenticated();
+    // }
+    //
+    // match /barangMasuk/{docId} {
+    //   allow read: if isAuthenticated();
+    //   allow write: if isAuthenticated();
+    // }
+    //
+    // match /barangKeluar/{docId} {
+    //   allow read: if isAuthenticated();
+    //   allow write: if isAuthenticated();
+    // }
+    //
+    // match /kontak/{docId} {
+    //   allow read: if isAuthenticated();
+    //   allow write: if isAuthenticated();
+    // }
+    //
+    // match /users/{username} {
+    //   allow read: if isAuthenticated();
+    //   allow write: if isAdmin() || request.auth.token.username == username;
+    // }
+    //
+    // match /logs/{docId} {
+    //   allow read: if isAuthenticated();
+    //   allow write: if isAuthenticated();
+    // }
+    //
+    // match /otpCodes/{docId} {
+    //   allow read, write: if true;
+    // }
+  }
+}
